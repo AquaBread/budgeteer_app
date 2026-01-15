@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>Budgets</h3>
+<form method="post">
+    <label>Month (YYYY-MM)
+        <input name="month" value="{{ month }}" pattern="\d{4}-\d{2}" required>
+    </label>
+    <table class="budget-table">
+        <thead>
+            <tr class="budget-head">
+                <th class="col-cat">Category</th>
+                <th class="col-budget right">Budget (USD)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for group_name, items in cats|groupby('group_name') %}
+            <tr class="group-row">
+                <th colspan="2">
+                    <div class="group-header">
+                        <span class="group-title">{{ group_name if group_name
+                            else 'Ungrouped' }}</span>
+                        <span class="group-hint">Monthly targets</span>
+                    </div>
+                </th>
+            </tr>
+
+            {% for c in items %}
+            <tr class="cat-row">
+                <td class="cat-name">{{ c['name'] }}</td>
+                <td class="cat-budget-cell">
+                    {# choose: existing budget if present, else suggested, else
+                    0 #}
+                    {% set cur = existing.get(c['id']) %}
+                    {% if cur is none %}
+                    {% set cur = suggested.get(c['id'], 0) %}
+                    {% endif %}
+
+                    <div class="budget-input-wrap">
+                        <input
+                            class="budget-input"
+                            type="number"
+                            step="0.01"
+                            name="cat_{{ c['id'] }}"
+                            value="{{ '%.2f' % (cur / 100) }}" />
+                    </div>
+
+                    {% if rollover.get(c['id']) %}
+                    {% set r = rollover.get(c['id']) %}
+                    <div class="rollover">
+                        Rollover from {{ prev_month }}:
+                        <span class="{{ 'pos' if r > 0 else 'neg' }}">
+                            {{ '+' if r > 0 else '−' }}${{ '%.2f' % ((r|abs) /
+                            100) }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit" name="action" value="save">Save Budgets</button>
+    <button type="submit" name="action" value="clear" class="secondary"
+        onclick="return confirm('Clear all budgets for this month?');">
+        Clear Month
+    </button>
+
+</form>
+{% endblock %}

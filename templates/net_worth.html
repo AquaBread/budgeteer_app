@@ -1,0 +1,103 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>Net Worth</h3>
+
+<form method="post">
+    <div class="grid">
+        <label>As of
+            <input type="date" name="as_of" value="{{ as_of }}" required>
+        </label>
+    </div>
+
+    <h4>Enter balances</h4>
+    <p>Enter balances as positive numbers. Credit card balances are treated as
+        liabilities automatically.</p>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Account</th>
+                <th>Type</th>
+                <th class="right">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for a in accounts %}
+            <tr>
+                <td>{{ a['name'] }}</td>
+                <td>{{ a['type'] }}</td>
+                <td class="right">
+                    <input type="number" step="0.01" min="0"
+                        name="bal_{{ a['id'] }}"
+                        value="{{ '%.2f' % ((bal_map.get(a['id'], 0))/100) if a['id'] in bal_map else '' }}"
+                        placeholder="Leave blank to skip">
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <button type="submit">Save Balances</button>
+</form>
+
+<hr>
+
+<section class="grid">
+    <article>
+        <h4>Total Assets</h4>
+        <p class="pos">${{ '%.2f' % (assets/100) }}</p>
+    </article>
+    <article>
+        <h4>Total Liabilities</h4>
+        <p class="neg">${{ '%.2f' % (liabilities/100) }}</p>
+    </article>
+    <article>
+        <h4>Net Worth</h4>
+        <p class="{{ 'pos' if net >= 0 else 'neg' }}">${{ '%.2f' % (net/100)
+            }}</p>
+    </article>
+</section>
+
+<hr>
+
+<h4>Net Worth Over Time</h4>
+<canvas id="nwChart" height="120"></canvas>
+
+<script>
+  const labels = [
+    {% for r in history %}
+      '{{ r["as_of"] }}'{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  ];
+
+  const assets = [
+    {% for r in history %}
+      {{ (r["assets"]/100)|round(2) }}{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  ];
+
+  const liabilities = [
+    {% for r in history %}
+      {{ (r["liabilities"]/100)|round(2) }}{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  ];
+
+  const net = assets.map((a, i) => a - liabilities[i]);
+
+  if (labels.length && document.getElementById('nwChart')) {
+    new Chart(document.getElementById('nwChart'), {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Assets', data: assets },
+          { label: 'Liabilities', data: liabilities },
+          { label: 'Net Worth', data: net }
+        ]
+      },
+      options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+  }
+</script>
+
+{% endblock %}

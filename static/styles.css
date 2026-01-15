@@ -1,0 +1,261 @@
+.neg {
+    color: #b00020;
+}
+
+.pos {
+    color: #0a7f2e;
+}
+
+.right {
+    text-align: right;
+}
+
+.form-field{
+  display:flex;
+  flex-direction:column;
+  gap:0.35rem;
+}
+
+.field-header{
+  display:flex;
+  align-items:baseline;
+  justify-content:space-between;
+  gap:0.75rem;
+}
+
+.field-label{
+  font-weight:600;
+}
+
+.field-hint{
+  font-size:0.85rem;
+  opacity:0.7;
+}
+
+/* --- Tag picker container --- */
+.tag-picker{
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.45rem;
+
+  /* overload handling */
+  max-height: 6.5rem;           /* adjust: ~2–3 rows */
+  overflow:auto;
+  padding:0.35rem;
+  border:1px solid rgba(255,255,255,0.08);
+  border-radius:0.75rem;
+}
+
+/* pill base */
+.tag-pill {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid #64748b;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  line-height: 1.2;
+  margin-right: 0.35rem;
+  white-space: nowrap;
+  opacity: 0.95;
+}
+
+.tag-pill.selectable{
+  --tag: #64748b;
+  display:inline-flex;
+  align-items:center;
+
+  border:1px solid color-mix(in srgb, var(--tag) 70%, transparent);
+  color: color-mix(in srgb, var(--tag) 80%, white 20%);
+  border-radius:999px;
+  padding:0.22rem 0.55rem;
+  font-size:0.9rem;
+  line-height:1;
+  cursor:pointer;
+  user-select:none;
+
+  transition: transform 0.08s ease, background 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+  opacity:0.9;
+}
+
+.tag-pill.selectable:hover{
+  opacity:1;
+  transform: translateY(-1px);
+}
+
+/* hide checkbox but keep it accessible */
+.tag-pill.selectable input{
+  position:absolute;
+  opacity:0;
+  pointer-events:none;
+}
+
+/* ✅ Filled selection state (the missing piece) */
+.tag-pill.selectable input:checked + .tag-text{
+  background: var(--tag);
+  color: #0b1220; /* dark text like your UI */
+  border-radius:999px;
+  padding:0.22rem 0.55rem; /* match pill padding */
+}
+
+/* When selected, remove the outline-only look */
+.tag-pill.selectable:has(input:checked){
+  border-color: var(--tag);
+  color:#0b1220;
+  opacity:1;
+}
+
+/* Optional: show a subtle focus ring for keyboard users */
+.tag-pill.selectable:has(input:focus-visible){
+  outline:2px solid color-mix(in srgb, var(--tag) 55%, white 45%);
+  outline-offset:2px;
+}
+
+.modal::backdrop{
+  background: rgba(0,0,0,0.55);
+}
+
+.modal{
+  border: none;
+  padding: 0;
+  background: transparent;
+}
+
+.modal-card{
+  width: min(520px, calc(100vw - 2rem));
+  border-radius: 1rem;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(17,24,39,0.98);
+  box-shadow: 0 18px 60px rgba(0,0,0,0.55);
+  padding: 1rem;
+}
+
+.modal-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.icon-btn{
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 0.6rem;
+  padding: 0.25rem 0.55rem;
+  cursor: pointer;
+}
+
+.modal-body{
+  display:flex;
+  flex-direction:column;
+  gap: 0.75rem;
+}
+
+.muted{ opacity: 0.75; }
+
+.tx-preview{
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  display:flex;
+  flex-direction:column;
+  gap: 0.25rem;
+}
+
+.amount.pos{ color: #22c55e; }
+.amount.neg{ color: #ef4444; }
+
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+/* “danger” button styling */
+button.danger{
+  background: #ef4444;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: #0b1220;
+}
+button.danger:hover{ filter: brightness(1.05); }
+
+/* Budgets table clarity */
+.budget-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.budget-head th {
+  font-size: 0.9rem;
+  opacity: 0.8;
+  padding: 0.75rem 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.right { text-align: right; }
+
+/* Group header row: looks like a section divider */
+.group-row th {
+  padding: 0;
+  border: none;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0.85rem 0.75rem;
+  margin-top: 0.75rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+}
+
+.group-title {
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  opacity: 0.95;
+}
+
+.group-hint {
+  font-size: 0.85rem;
+  opacity: 0.6;
+}
+
+/* Category rows: clearly “form rows” */
+.cat-row td {
+  padding: 0.75rem 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  vertical-align: top;
+}
+
+.cat-name {
+  padding-left: 1.1rem; /* subordinate to group */
+  opacity: 0.95;
+}
+
+.cat-budget-cell {
+  width: 360px;
+}
+
+.budget-input-wrap {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.budget-input {
+  width: 100%;
+  max-width: 260px;
+  font-weight: 700;
+}
+
+.rollover {
+  margin-top: 0.35rem;
+  font-size: 0.85rem;
+  opacity: 0.75;
+  text-align: right;
+}

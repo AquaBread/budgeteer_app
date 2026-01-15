@@ -1,0 +1,238 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h2>Dashboard</h2>
+<p><small>This month: {{ mkey }} • Trend range: {{ start_mkey }} → {{ mkey }}</small></p>
+
+<nav style="margin-bottom: 1rem;">
+    <a role="button" class="{{ 'contrast' if range_key=='1' else 'secondary' }}"
+        href="{{ url_for('index', range='1') }}">This Month</a>
+    <a role="button" class="{{ 'contrast' if range_key=='3' else 'secondary' }}"
+        href="{{ url_for('index', range='3') }}">Last 3 Months</a>
+    <a role="button" class="{{ 'contrast' if range_key=='6' else 'secondary' }}"
+        href="{{ url_for('index', range='6') }}">Last 6 Months</a>
+    <a role="button"
+        class="{{ 'contrast' if range_key=='ytd' else 'secondary' }}"
+        href="{{ url_for('index', range='ytd') }}">YTD</a>
+</nav>
+
+<p><small>Range: {{ start_mkey }} → {{ mkey }}</small></p>
+
+<section class="grid">
+    <article>
+        <h4>Income (Monthly)</h4>
+        <p class="pos">${{ '%.2f' % (income_monthly/100) }}</p>
+    </article>
+    <article>
+        <h4>Total Budget</h4>
+        <p>${{ '%.2f' % (B_total/100) }}</p>
+    </article>
+    <article>
+        <h4>Spent MTD</h4>
+        <p class="{{ 'neg' if variance > 0 else 'pos' }}">
+            ${{ '%.2f' % (S_so_far/100) }}
+        </p>
+
+    </article>
+    <article>
+        <h4>Variance vs Pro-Rata</h4>
+        <p class="{{ 'neg' if variance>0 else 'pos' }}">
+            {{ '+' if variance<0 else '' }}${{ '%.2f' % ((variance|abs)/100) }}
+            {{ 'ahead' if variance<0 else 'behind' }}
+        </p>
+    </article>
+    <article>
+        <h4>Daily Cap (rest of month)</h4>
+        <p>${{ '%.2f' % (cap/100) }}</p>
+    </article>
+    <article>
+        <h4>Projected Savings (This Month)</h4>
+        <p class="{{ 'pos' if savings_month>=0 else 'neg' }}">
+            ${{ '%.2f' % (savings_month/100) }}
+        </p>
+    </article>
+</section>
+
+<hr>
+
+<h3>Budget vs Spending by Category</h3>
+<canvas id="catBar" height="120"></canvas>
+
+<hr>
+
+<h3>Spending by Group</h3>
+
+{% if groups %}
+<table>
+    <thead>
+        <tr>
+            <th>Group</th>
+            <th class="right">Budget</th>
+            <th class="right">Spent</th>
+            <th class="right">Remaining</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for g in groups if g['group_type'] != 'income' %}
+        {% set remaining = g['budget'] - g['spent'] %}
+        <tr>
+            <td>{{ g['group_name'] }}</td>
+            <td class="right">${{ '%.2f' % (g['budget']/100) }}</td>
+            <td class="right {{ 'neg' if g['spent'] > g['budget'] else 'pos' }}">
+                ${{ '%.2f' % (g['spent']/100) }}
+            </td>
+            <td class="right {{ 'neg' if remaining < 0 else 'pos' }}">
+                ${{ '%.2f' % (remaining/100) }}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No groups defined yet. You can create them on the
+    <a href="{{ url_for('category_groups') }}">Category Groups</a> page.</p>
+{% endif %}
+
+<canvas id="groupBar" height="120" style="margin-top: 1.5rem;"></canvas>
+
+<h3>Spending Trend</h3>
+<canvas id="trendChart" height="120"></canvas>
+
+<h3>Top Categories (Range)</h3>
+<canvas id="catRangeChart" height="120"></canvas>
+
+<script>
+    // Category-level chart
+    const catLabels = [
+        {% for r in cats %}
+            '{{ r["name"] }}'{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    const catBudget = [
+        {% for r in cats %}
+            {{ (r["budget"] / 100)|round(2) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    const catSpent = [
+        {% for r in cats %}
+            {{ (r["spent"] / 100)|round(2) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    if (catLabels.length && document.getElementById('catBar')) {
+        new Chart(document.getElementById('catBar'), {
+            type: 'bar',
+            data: {
+                labels: catLabels,
+                datasets: [
+                    { label: 'Budget', data: catBudget },
+                    { label: 'Spent', data: catSpent }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+
+    // ----- Group-level chart -----
+    const groupLabels = [
+        {% for g in groups if g["group_type"] == "expense" %}
+            '{{ g["group_name"] }}'{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    const groupBudget = [
+        {% for g in groups if g["group_type"] == "expense" %}
+            {{ (g["budget"] / 100)|round(2) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    const groupSpent = [
+        {% for g in groups if g["group_type"] == "expense" %}
+            {{ (g["spent"] / 100)|round(2) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    if (groupLabels.length && document.getElementById('groupBar')) {
+        new Chart(document.getElementById('groupBar'), {
+            type: 'bar',
+            data: {
+                labels: groupLabels,
+                datasets: [
+                    { label: 'Budget', data: groupBudget },
+                    { label: 'Spent', data: groupSpent }
+                ]
+            },
+            options: {
+                responsive: true,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    }
+
+    const tLabels = [
+        {% for r in trend %}
+        '{{ r["mkey"] }}'{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    const tSpent = [
+        {% for r in trend %}
+        {{ (r["spent"]/100)|round(2) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    const tIncome = [
+        {% for r in trend %}
+        {{ (r["income"]/100)|round(2) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    const tMA3 = [
+        {% for v in ma3 %}
+        {{ (v/100)|round(2) }}{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+    if (tLabels.length && document.getElementById("trendChart")) {
+        new Chart(document.getElementById("trendChart"), {
+        type: "line",
+        data: {
+            labels: tLabels,
+            datasets: [
+            { label: "Spent", data: tSpent },
+            { label: "Income", data: tIncome },
+            { label: "3-Month Avg (Spent)", data: tMA3 }
+            ]
+        },
+        options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+        });
+    }
+
+    const cLabels = [
+        {% for r in top_cats_range %}
+        '{{ r["category"] }}'{% if not loop.last %}, {% endif %}
+        {% endfor %}
+    ];
+
+  const cSpent = [
+    {% for r in top_cats_range %}
+      {{ (r["spent"]/100)|round(2) }}{% if not loop.last %}, {% endif %}
+    {% endfor %}
+  ];
+
+  if (cLabels.length && document.getElementById("catRangeChart")) {
+    new Chart(document.getElementById("catRangeChart"), {
+      type: "bar",
+      data: {
+        labels: cLabels,
+        datasets: [{ label: "Spent", data: cSpent }]
+      },
+      options: { responsive: true, plugins: { legend: { position: "bottom" } } }
+    });
+  }
+</script>
+{% endblock %}

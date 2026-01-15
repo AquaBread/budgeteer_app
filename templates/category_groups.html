@@ -1,0 +1,107 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>Category Groups</h3>
+
+<section class="grid">
+    <article>
+        <h4>Add Group</h4>
+        <form method="post">
+            <label>Name
+                <input name="name" placeholder="Housing, Food, Transport..."
+                    required>
+            </label>
+            <label>Type
+                <select name="type" required>
+                    <option value="expense" selected>Expense</option>
+                    <option value="income">Income</option>
+                </select>
+            </label>
+            <label>Sort Order (optional)
+                <input type="number" name="sort_order" placeholder="1, 2, 3...">
+            </label>
+            <button type="submit">Add Group</button>
+        </form>
+    </article>
+
+    <article>
+        <h4>Existing Groups</h4>
+        {% if groups %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Sort</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for g in groups %}
+                <tr>
+                    <td>{{ g['name'] }}</td>
+                    <td>{{ g['type'] }}</td>
+                    <td>{{ g['sort_order'] if g['sort_order'] is not none else
+                        '—' }}</td>
+                    <td>
+                        <form method="post"
+                            action="{{ url_for('delete_category_group', group_id=g['id']) }}"
+                            onsubmit="return confirm('Delete this group? Categories will become ungrouped.');">
+                            <button type="submit"
+                                class="secondary">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No groups yet. Add one on the left.</p>
+        {% endif %}
+    </article>
+</section>
+
+<hr>
+
+<h4>Assign Categories to Groups</h4>
+<p>
+    Use the dropdown next to each category to assign it to a group. Ungrouped
+    categories will still work normally, they just won’t be summarized by group.
+</p>
+
+<table>
+    <thead>
+        <tr>
+            <th>Category</th>
+            <th>Group</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for c in cats %}
+        <tr>
+            <td>{{ c['name'] }}</td>
+            <td>
+                <form method="post"
+                    action="{{ url_for('set_category_group', cat_id=c['id']) }}"
+                    class="grid">
+                    <select name="group_id">
+                        <option value>— Ungrouped —</option>
+                        {% for g in groups %}
+                        <option value="{{ g['id'] }}"
+                            {% if c['group_id'] == g['id'] %}selected{% endif
+                            %}>
+                            {{ g['name'] }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <button type="submit">Save</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

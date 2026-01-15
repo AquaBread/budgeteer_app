@@ -1,0 +1,35 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>Categories</h3>
+
+<form method="post">
+    <label>New Category
+        <input name="name" required
+            placeholder="e.g., Paycheck, Gifts, Pet Care">
+    </label>
+    <button>Add</button>
+</form>
+
+<hr>
+
+<table>
+    <thead>
+        <tr><th>Name</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        {% for c in cats %}
+        <tr>
+            <td>{{ c['name'] }}</td>
+            <td>
+                <form method="post"
+                    action="{{ url_for('delete_category', cat_id=c['id']) }}"
+                    onsubmit="return confirm('Delete this category? Budgets may be removed and transactions may lose their category.');">
+                    <button class="secondary" type="submit">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

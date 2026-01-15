@@ -1,0 +1,65 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>Accounts</h3>
+<form method="post">
+    <div class="grid">
+        <label>Name <input name="name" required></label>
+        <label>Type
+            <select name="type">
+                <select name="type" required>
+                    <option value="debit">Debit (Checking/Savings)</option>
+                    <option value="credit">Credit Card</option>
+                    <option value="investment">Investment</option>
+                </select>
+            </select>
+        </label>
+    </div>
+    <button>Add</button>
+</form>
+
+<table>
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for a in accounts %}
+        <tr>
+            <td>{{ a['id'] }}</td>
+            <td>
+                <form method="post"
+                    action="{{ url_for('update_account', account_id=a['id']) }}">
+                    <input name="name" value="{{ a['name'] }}" required>
+                </td>
+                <td>
+                    <select name="type" required>
+                        <option value="debit" {% if a['type'] == 'debit'
+                            %}selected{% endif %}>Debit</option>
+                        <option value="credit" {% if a['type'] == 'credit'
+                            %}selected{% endif %}>Credit</option>
+                        <option value="investment" {% if a['type'] ==
+                            'investment' %}selected{% endif
+                            %}>Investment</option>
+                    </select>
+                </td>
+                <td>
+                    <button type="submit">Save</button>
+                </form>
+
+                <form method="post"
+                    action="{{ url_for('delete_account', account_id=a['id']) }}"
+                    style="display:inline"
+                    onsubmit="return confirm('Delete this account and related data?');">
+                    <button type="submit" class="secondary">Delete</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

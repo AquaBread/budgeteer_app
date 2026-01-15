@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Budgeteer</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <style>
+            header {
+                margin: 1rem 0;
+            }
+
+            .neg {
+                color: #b00020;
+            }
+
+            .pos {
+                color: #0a7f2e;
+            }
+        </style>
+    </head>
+
+    <body>
+        <nav class="container-fluid">
+            <ul>
+                <li><strong>Budgeteer</strong></li>
+            </ul>
+            <ul>
+                <li><a href="{{ url_for('index') }}">Dashboard</a></li>
+                <li><a href="{{ url_for('accounts') }}">Accounts</a></li>
+                <li><a href="{{ url_for('budgets') }}">Budgets</a></li>
+                <li><a href="{{ url_for('categories') }}">Categories</a></li>
+                <li><a href="{{ url_for('net_worth') }}">Net Worth</a></li>
+                <li><a href="{{ url_for('recurring') }}">Recurring</a></li>
+                <li><a href="{{ url_for('tags') }}">Tags</a></li>
+                <li><a href="{{ url_for('transactions') }}">Transactions</a></li>
+                <li><a href="{{ url_for('settings') }}">Settings</a></li>
+            </ul>
+        </nav>
+
+        <main class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div>
+                {% for cat, msg in messages %}
+                <article class="{{ cat }}">{{ msg }}</article>
+                {% endfor %}
+            </div>
+            {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+    </body>
+</html>

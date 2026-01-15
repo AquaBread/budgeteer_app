@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+{% block content %}
+<h3>Settings</h3>
+<form method="post">
+    <label>Annual Salary (USD)
+        <input type="number" step="0.01" name="salary_annual"
+            value="{{ '%.2f' % salary_annual }}" required>
+    </label>
+    <button type="submit">Save</button>
+</form>
+
+<hr>
+
+<section>
+    <h3>Getting Started</h3>
+
+    <h4>1. Set your income</h4>
+    <p>
+        Start by entering your annual salary above and saving. The app uses this
+        to estimate your monthly income and projected savings.
+    </p>
+
+    <h4>2. Configure your accounts</h4>
+    <p>
+        Go to <strong>Accounts</strong> in the top navigation and add at least
+        one debit account (and optionally credit accounts) that you spend from.
+    </p>
+
+    <h4>3. Create your monthly budget</h4>
+    <p>
+        Open the <strong>Budgets</strong> page and choose a month in
+        <code>YYYY-MM</code> format.
+        For each category, enter how much you plan to spend that month, then
+        save.
+    </p>
+
+    <h4>4. Add transactions</h4>
+    <p>
+        On the <strong>Transactions</strong> page, record your spending
+        manually:
+        pick an account, date, amount, and category. Use “Expense (−)” for
+        spending and “Refund/Income (+)” when money comes back in.
+    </p>
+
+    <h4>5. Set up recurring expenses</h4>
+    <p>
+        Use the <strong>Recurring</strong> page for fixed monthly costs (rent,
+        subscriptions, etc.).
+        Add each recurring expense once, then on the Transactions page you can
+        apply this month’s recurring expenses in a single click.
+    </p>
+
+    <h4>6. Read the dashboard</h4>
+    <p>
+        The <strong>Dashboard</strong> shows:
+    </p>
+    <ul>
+        <li>Your estimated monthly income.</li>
+        <li>Total budgeted vs spent so far this month.</li>
+        <li>Whether you’re ahead or behind your plan (pro-rata variance).</li>
+        <li>A suggested daily cap for the rest of the month to stay on
+            track.</li>
+        <li>Projected savings for the current month.</li>
+    </ul>
+
+    <h4>7. Adjust as you go</h4>
+    <p>
+        As the month progresses, tweak your budgets, add or edit transactions,
+        and watch how your remaining allowance and projected savings change.
+    </p>
+    <h4>8. Organize your categories</h4>
+    <p>
+        Use the <a href="{{ url_for('category_groups') }}">Category Groups</a>
+        page
+        to group categories (e.g., Housing, Food, Transport) so your budgets and
+        charts are easier to read.
+    </p>
+</section>
+{% endblock %}
