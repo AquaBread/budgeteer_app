@@ -5,14 +5,14 @@
 
 <nav style="margin-bottom: 1rem;">
     <a role="button" class="{{ 'contrast' if range_key=='1' else 'secondary' }}"
-        href="{{ url_for('index', range='1') }}">This Month</a>
+        href="{{ url_for('dashboard.index', range='1') }}">This Month</a>
     <a role="button" class="{{ 'contrast' if range_key=='3' else 'secondary' }}"
-        href="{{ url_for('index', range='3') }}">Last 3 Months</a>
+        href="{{ url_for('dashboard.index', range='3') }}">Last 3 Months</a>
     <a role="button" class="{{ 'contrast' if range_key=='6' else 'secondary' }}"
-        href="{{ url_for('index', range='6') }}">Last 6 Months</a>
+        href="{{ url_for('dashboard.index', range='6') }}">Last 6 Months</a>
     <a role="button"
         class="{{ 'contrast' if range_key=='ytd' else 'secondary' }}"
-        href="{{ url_for('index', range='ytd') }}">YTD</a>
+        href="{{ url_for('dashboard.index', range='ytd') }}">YTD</a>
 </nav>
 
 <p><small>Range: {{ start_mkey }} → {{ mkey }}</small></p>
@@ -89,7 +89,7 @@
 </table>
 {% else %}
 <p>No groups defined yet. You can create them on the
-    <a href="{{ url_for('category_groups') }}">Category Groups</a> page.</p>
+    <a href="{{ url_for('category_groups.index') }}">Category Groups</a> page.</p>
 {% endif %}
 
 <canvas id="groupBar" height="120" style="margin-top: 1.5rem;"></canvas>

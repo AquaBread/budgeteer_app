@@ -22,7 +22,7 @@
             <td>{{ c['name'] }}</td>
             <td>
                 <form method="post"
-                    action="{{ url_for('delete_category', cat_id=c['id']) }}"
+                    action="{{ url_for('categories.delete', cat_id=c['id']) }}"
                     onsubmit="return confirm('Delete this category? Budgets may be removed and transactions may lose their category.');">
                     <button class="secondary" type="submit">Delete</button>
                 </form>

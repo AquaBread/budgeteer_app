@@ -38,7 +38,7 @@
             <td><code>{{ t['color'] }}</code></td>
             <td>
                 <form method="post"
-                    action="{{ url_for('delete_tag', tag_id=t['id']) }}"
+                    action="{{ url_for('tags.delete', tag_id=t['id']) }}"
                     onsubmit="return confirm('Delete this tag? It will be removed from all transactions.');">
                     <button type="submit" class="secondary">Delete</button>
                 </form>

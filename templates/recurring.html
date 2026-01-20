@@ -76,7 +76,7 @@
             <td>{{ 'Yes' if r['active'] else 'No' }}</td>
             <td>
                 <form method="post"
-                    action="{{ url_for('toggle_recurring', rec_id=r['id']) }}"
+                    action="{{ url_for('recurring.toggle', rec_id=r['id']) }}"
                     style="display:inline">
                     <button type="submit">
                         {% if r['active'] %}Disable{% else %}Enable{% endif %}
@@ -84,7 +84,7 @@
                 </form>
 
                 <form method="post"
-                    action="{{ url_for('delete_recurring', rec_id=r['id']) }}"
+                    action="{{ url_for('recurring.delete', rec_id=r['id']) }}"
                     style="display:inline"
                     onsubmit="return confirm('Delete this recurring expense?');">
                     <button type="submit" class="secondary">Delete</button>

@@ -32,7 +32,7 @@
             <td>{{ a['id'] }}</td>
             <td>
                 <form method="post"
-                    action="{{ url_for('update_account', account_id=a['id']) }}">
+                    action="{{ url_for('accounts.update', account_id=a['id']) }}">
                     <input name="name" value="{{ a['name'] }}" required>
                 </td>
                 <td>
@@ -51,7 +51,7 @@
                 </form>
 
                 <form method="post"
-                    action="{{ url_for('delete_account', account_id=a['id']) }}"
+                    action="{{ url_for('accounts.delete', account_id=a['id']) }}"
                     style="display:inline"
                     onsubmit="return confirm('Delete this account and related data?');">
                     <button type="submit" class="secondary">Delete</button>
